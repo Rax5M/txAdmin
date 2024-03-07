@@ -3,7 +3,7 @@ import { processInstantiatedAtom, serverConfigPendingStepAtom } from '@/hooks/st
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
 import { useAtomValue } from 'jotai';
-import { MegaphoneIcon, PowerIcon, PowerOffIcon, RotateCcwIcon } from 'lucide-react';
+import { MegaphoneIcon, PowerIcon, PowerOffIcon, RotateCcwIcon, EraserIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useOpenConfirmDialog, useOpenPromptDialog } from '@/hooks/dialogs';
 import { useBackendApi } from '@/hooks/fetch';
@@ -49,11 +49,12 @@ export default function ServerControls() {
         path: '/fxserver/commands'
     });
 
-    const handleServerControl = (action: 'start' | 'stop' | 'restart') => {
+    const handleServerControl = (action: 'start' | 'stop' | 'restart' | 'clear_cache') => {
         const messageMap = {
             start: 'Starting server',
             stop: 'Stopping server',
             restart: 'Restarting server',
+            clear_cache: 'Clearing cache',
         }
         const toastLoadingMessage = `${messageMap[action]}...`;
         const callApi = () => {
@@ -79,6 +80,10 @@ export default function ServerControls() {
     const handleRestart = () => {
         if (!processInstantiated) return;
         handleServerControl('restart');
+    }
+    const handleClearCache = () => {
+        if (!processInstantiated) return;
+        handleServerControl('clear_cache');
     }
 
     const handleAnnounce = () => {
@@ -174,6 +179,27 @@ export default function ServerControls() {
                 <TooltipContent className={cn(!hasControlPerms && 'text-destructive-inline text-center')}>
                     {hasControlPerms ? (
                         <p>Restart Server</p>
+                    ) : (
+                        <p>
+                            You do not have permission <br />
+                            to control the server.
+                        </p>
+                    )}
+                </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <button
+                        onClick={handleClearCache}
+                        className={cn(controlButtonsVariants({ type: 'warning' }))}
+                        disabled={!hasControlPerms || processInstantiated}
+                    >
+                        <EraserIcon className='h-5' />
+                    </button>
+                </TooltipTrigger>
+                <TooltipContent className={cn(!hasControlPerms && 'text-destructive-inline text-center')}>
+                    {hasControlPerms ? (
+                        <p>Clear Cache</p>
                     ) : (
                         <p>
                             You do not have permission <br />

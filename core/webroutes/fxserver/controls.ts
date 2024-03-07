@@ -66,6 +66,21 @@ export default async function FXServerControls(ctx: AuthedCtx) {
             return ctx.send<ApiToastResp>({ type: 'success', msg: 'The server is now starting.' });
         }
 
+    } else if (action == 'clear_cache') {
+        if (fxRunner.fxChild !== null) {
+            return ctx.send<ApiToastResp>({
+                type: 'error',
+                msg: 'The server must be stopped to clear the cache.'
+            });
+        }
+        ctx.admin.logCommand('CLEAR CACHE');
+        const clearCacheMsg = await fxRunner.clearCache();
+        if (clearCacheMsg !== null) {
+            return ctx.send<ApiToastResp>({ type: 'error', md: true, msg: clearCacheMsg });
+        } else {
+            return ctx.send<ApiToastResp>({ type: 'success', msg: 'The cache has been cleared.' });
+        }
+        
     } else {
         return ctx.send<ApiToastResp>({
             type: 'error',

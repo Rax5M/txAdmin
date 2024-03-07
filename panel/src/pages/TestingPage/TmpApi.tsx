@@ -8,7 +8,7 @@ import { ApiToastResp } from "@shared/genericApiTypes";
 
 export default function TmpApi() {
     type FxsControlReqType = {
-        action: 'start' | 'stop' | 'restart';
+        action: 'start' | 'stop' | 'restart' | 'clear_cache';
     }
     const fxsControlApi = useBackendApi<ApiToastResp, FxsControlReqType>({
         method: 'POST',

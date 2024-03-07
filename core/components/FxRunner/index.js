@@ -1,7 +1,9 @@
 const modulename = 'FXRunner';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import fs from 'fs';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { rimraf } from 'rimraf';
 import { parseArgsStringToArgv } from 'string-argv';
 import StreamValues from 'stream-json/streamers/StreamValues';
 
@@ -402,6 +404,35 @@ export default class FXRunner {
         }
     }
 
+    //================================================================
+    /**
+     * Clears the FXServer cache
+     */
+    async clearCache() {
+        try {
+            if (this.fxChild !== null) {
+                const msg = "Cannot clear cache while the server is running.";
+                console.error(msg);
+                return msg;
+            }
+
+            const cachePath = path.join(this.config.serverDataPath, 'cache');
+            await rimraf(cachePath);
+            if (fs.existsSync(cachePath)) {
+                const msg = "Failed to clear cache. The folder still exists for some reason ¯\_(ツ)_/¯";
+                console.error(msg);
+                return msg;
+            }
+
+            console.ok("Cache cleared successfully.");
+            return null;
+        } catch (error) {
+            const msg = "Couldn't clear cache.";
+            console.error(msg);
+            console.verbose.dir(error);
+            return msg;
+        }
+    }
 
     //================================================================
     /**
