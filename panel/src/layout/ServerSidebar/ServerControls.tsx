@@ -67,9 +67,10 @@ export default function ServerControls() {
         if (action === 'start') {
             callApi();
         } else {
+            const actionText = action === 'clear_cache' ? 'clear the cache of' : action;
             openConfirmDialog({
                 title: messageMap[action],
-                message: `Are you sure you want to ${action} the server?`,
+                message: `Are you sure you want to ${actionText} the server?`,
                 onConfirm: callApi,
             });
         }
@@ -82,7 +83,7 @@ export default function ServerControls() {
         handleServerControl('restart');
     }
     const handleClearCache = () => {
-        if (!processInstantiated) return;
+        if (processInstantiated) return;
         handleServerControl('clear_cache');
     }
 
